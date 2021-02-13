@@ -14,10 +14,7 @@ end;
 function courseplay:setCpMode(vehicle, modeNum)
 	if vehicle.cp.mode ~= modeNum then
 		vehicle.cp.mode = modeNum;
-		--courseplay:setNextPrevModeVars(vehicle);
 		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
-		--courseplay.buttons:setActiveEnabled(vehicle, 'all');
-		--end
 		courseplay:setAIDriver(vehicle, modeNum)
 	end;
 end;
@@ -43,6 +40,8 @@ function courseplay:setAIDriver(vehicle, mode)
 		status,driver,err,errDriverName = xpcall(FillableFieldworkAIDriver, function(err) printCallstack(); return self,err,"FillableFieldworkAIDriver" end, vehicle)
 	elseif mode == courseplay.MODE_FIELDWORK then
 		status,driver,err,errDriverName = xpcall(UnloadableFieldworkAIDriver.create, function(err) printCallstack(); return self,err,"UnloadableFieldworkAIDriver" end, vehicle)
+	elseif mode == courseplay.MODE_BALE_COLLECTOR then
+		status,driver,err,errDriverName = xpcall(BaleCollectorAIDriver, function(err) printCallstack(); return self,err,"BaleCollectorAIDriver" end, vehicle)
 	elseif mode == courseplay.MODE_BUNKERSILO_COMPACTER then
 		status,driver,err,errDriverName = xpcall(LevelCompactAIDriver, function(err) printCallstack(); return self,err,"LevelCompactAIDriver" end, vehicle)
 	elseif mode == courseplay.MODE_FIELD_SUPPLY then
@@ -1806,35 +1805,63 @@ StartingPointSetting.START_AT_FIRST_POINT   = 2 -- first waypoint
 StartingPointSetting.START_AT_CURRENT_POINT = 3 -- current waypoint
 StartingPointSetting.START_AT_NEXT_POINT    = 4 -- nearest waypoint with approximately same direction as vehicle
 StartingPointSetting.START_WITH_UNLOAD      = 5 -- start with unloading the combine (only for CombineUnloadAIDriver)
+StartingPointSetting.START_COLLECTING_BALES = 6 -- start with unloading the combine (only for CombineUnloadAIDriver)
 
 function StartingPointSetting:init(vehicle)
-	SettingList.init(self, 'startingPoint', 'COURSEPLAY_START_AT_POINT', 'COURSEPLAY_START_AT_POINT', vehicle,
-			{
-		        StartingPointSetting.START_AT_NEAREST_POINT,
-				StartingPointSetting.START_AT_FIRST_POINT  ,
-				StartingPointSetting.START_AT_CURRENT_POINT,
-				StartingPointSetting.START_AT_NEXT_POINT,
-				StartingPointSetting.START_WITH_UNLOAD
-			},
-			{
-				"COURSEPLAY_NEAREST_POINT",
-				"COURSEPLAY_FIRST_POINT"  ,
-				"COURSEPLAY_CURRENT_POINT",
-				"COURSEPLAY_NEXT_POINT",
-				"COURSEPLAY_UNLOAD"
-			})
+	local values, texts = self:getValuesForMode(vehicle.cp.mode)
+	SettingList.init(self, 'startingPoint',
+		'COURSEPLAY_START_AT_POINT', 'COURSEPLAY_START_AT_POINT', vehicle, values, texts)
+end
+
+function StartingPointSetting:getValuesForMode(mode)
+	if mode == courseplay.MODE_COMBI or mode == courseplay.MODE_OVERLOADER then
+		return {
+			StartingPointSetting.START_AT_NEAREST_POINT,
+			StartingPointSetting.START_AT_FIRST_POINT  ,
+			StartingPointSetting.START_AT_CURRENT_POINT,
+			StartingPointSetting.START_AT_NEXT_POINT,
+			StartingPointSetting.START_WITH_UNLOAD
+		},
+		{
+			"COURSEPLAY_NEAREST_POINT",
+			"COURSEPLAY_FIRST_POINT"  ,
+			"COURSEPLAY_CURRENT_POINT",
+			"COURSEPLAY_NEXT_POINT",
+			"COURSEPLAY_UNLOAD",
+		}
+	elseif mode == courseplay.MODE_BALE_COLLECTOR then
+		return {
+			StartingPointSetting.START_AT_NEAREST_POINT,
+			StartingPointSetting.START_AT_FIRST_POINT  ,
+			StartingPointSetting.START_AT_NEXT_POINT,
+			StartingPointSetting.START_COLLECTING_BALES
+		},
+		{
+			"COURSEPLAY_NEAREST_POINT",
+			"COURSEPLAY_FIRST_POINT"  ,
+			"COURSEPLAY_NEXT_POINT",
+			"COURSEPLAY_COLLECT_BALES",
+		}
+	else
+		return {
+			StartingPointSetting.START_AT_NEAREST_POINT,
+			StartingPointSetting.START_AT_FIRST_POINT  ,
+			StartingPointSetting.START_AT_CURRENT_POINT,
+			StartingPointSetting.START_AT_NEXT_POINT,
+		},
+		{
+			"COURSEPLAY_NEAREST_POINT",
+			"COURSEPLAY_FIRST_POINT"  ,
+			"COURSEPLAY_CURRENT_POINT",
+			"COURSEPLAY_NEXT_POINT",
+		}
+	end
 end
 
 function StartingPointSetting:checkAndSetValidValue(new)
-	-- enable unload only for CombineUnloadAIDriver/Overloader
-	if self.vehicle.cp.driver and
-			self.vehicle.cp.mode ~= courseplay.MODE_COMBI and
-			self.vehicle.cp.mode ~= courseplay.MODE_OVERLOADER and
-			self.values[new] == StartingPointSetting.START_WITH_UNLOAD then
-		return 1
-	else
-		return SettingList.checkAndSetValidValue(self, new)
-	end
+	-- make sure we always have a valid set for the current mode
+	self.values, self.texts = self:getValuesForMode(self.vehicle.cp.mode)
+	return SettingList.checkAndSetValidValue(self, new)
 end
 
 ---@class StartingLocationSetting : SettingList
@@ -2491,9 +2518,6 @@ function ShowMapHotspotSetting:getMapHotspotText(vehicle)
 end
 
 function ShowMapHotspotSetting:createMapHotspot()
-	if self.vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING then
-		return
-	end
 	--[[
 	local hotspotX, _, hotspotZ = getWorldTranslation(vehicle.rootNode);
 	local _, textSize = getNormalizedScreenValues(0, 6);
@@ -3030,13 +3054,6 @@ TurnOnFieldSetting = CpObject(BooleanSetting)
 function TurnOnFieldSetting:init(vehicle)
 	BooleanSetting.init(self, 'turnOnField','COURSEPLAY_TURN_ON_FIELD', 'COURSEPLAY_TURN_ON_FIELD', vehicle) 
 	self:set(true)
-end
-
----@class TurnStageSetting : BooleanSetting
-TurnStageSetting = CpObject(BooleanSetting)
-function TurnStageSetting:init(vehicle)
-	BooleanSetting.init(self, 'turnStage','COURSEPLAY_TURN_MANEUVER', 'COURSEPLAY_TURN_MANEUVER', vehicle, {'COURSEPLAY_START','COURSEPLAY_FINISH'}) 
-	self:set(false)
 end
 
 ---@class RefillUntilPctSetting : PercentageSettingList
@@ -4154,7 +4171,6 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(DriveUnloadNowSetting, vehicle)
 	container:addSetting(CombineWantsCourseplayerSetting, vehicle)
 	container:addSetting(TurnOnFieldSetting, vehicle)
-	container:addSetting(TurnStageSetting, vehicle)
 	container:addSetting(GrainTransportDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(FillableFieldWorkDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(FieldSupplyDriver_SiloSelectedFillTypeSetting, vehicle)

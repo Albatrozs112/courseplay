@@ -231,7 +231,7 @@ function courseplay.hud:setup()
 		[courseplay.MODE_SEED_FERTILIZE]		 = { 220, 72, 252,40 };
 		[courseplay.MODE_TRANSPORT]				 = {   4,108,  36,76 };
 		[courseplay.MODE_FIELDWORK]				 = {  40,108,  72,76 };
-		[courseplay.MODE_COMBINE_SELF_UNLOADING] = {  76,108, 108,76 };
+		[courseplay.MODE_BALE_COLLECTOR] = {  76,108, 108,76 };
 		[courseplay.MODE_FIELD_SUPPLY] = { 112,108, 144,76 };
 		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = { 148,108, 180,76 };
 		[courseplay.MODE_BUNKERSILO_COMPACTER]	 = { 219,431, 251,399 };
@@ -323,7 +323,7 @@ function courseplay.hud:setup()
 		[courseplay.MODE_SEED_FERTILIZE]		 = {  40,144,  72,112 };
 		[courseplay.MODE_TRANSPORT]				 = {  76,144, 108,112 };
 		[courseplay.MODE_FIELDWORK]				 = { 112,144, 144,112 };
-		[courseplay.MODE_COMBINE_SELF_UNLOADING] = { 148,144, 180,112 };
+		[courseplay.MODE_BALE_COLLECTOR] = { 148,144, 180,112 };
 		[courseplay.MODE_FIELD_SUPPLY] = { 184,144, 216,112 };
 		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = { 220,144, 252,112 };
 		[courseplay.MODE_BUNKERSILO_COMPACTER]	 = { 219,394, 251,362 };
@@ -355,8 +355,8 @@ function courseplay.hud:setup()
 		[courseplay.MODE_SEED_FERTILIZE] 			= courseplay.utils:rgbToNormal( 30, 255, 156, 1),       -- Light Green
 		[courseplay.MODE_TRANSPORT] 				= courseplay.utils:rgbToNormal( 21, 198, 255, 1),       -- Blue
 		[courseplay.MODE_FIELDWORK] 				= courseplay.utils:rgbToNormal( 49,  52, 140, 1),       -- Dark Blue
-		[courseplay.MODE_COMBINE_SELF_UNLOADING]	= courseplay.utils:rgbToNormal(159,  29, 250, 1),       -- Purple
-		[courseplay.MODE_FIELD_SUPPLY] 	= courseplay.utils:rgbToNormal(255,  27, 231, 1),       -- Pink
+		[courseplay.MODE_BALE_COLLECTOR]			= courseplay.utils:rgbToNormal(159,  29, 250, 1),       -- Purple
+		[courseplay.MODE_FIELD_SUPPLY] 				= courseplay.utils:rgbToNormal(255,  27, 231, 1),       -- Pink
 		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]		= courseplay.utils:rgbToNormal(231,  19,  19, 1),       -- Red
 		[courseplay.MODE_BUNKERSILO_COMPACTER]		= courseplay.utils:rgbToNormal(231,  19,  19, 1),       -- Red
 	};
@@ -1000,18 +1000,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						end;
 					else
 						self:disableButtonWithFunction(vehicle,page, 'switchCourseplayerSide')
-					end
-				elseif entry.functionToCall == 'turnStage:toggle' then
-					--TurnStageSetting
-					if g_combineUnloadManager:getHasUnloaders(vehicle) then
-						--manual chopping: initiate/end turning maneuver
-						if not  vehicle:getIsCourseplayDriving()  then
-							self:enableButtonWithFunction(vehicle,page, 'toggle',vehicle.cp.settings.turnStage)
-							vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.turnStage:getLabel()
-							vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.turnStage:getText()
-						end
-					else
-						self:disableButtonWithFunction(vehicle,page, 'toggle',vehicle.cp.settings.turnStage)
 					end
 				elseif entry.functionToCall == 'driverPriorityUseFillLevel:toggle' then
 					--DriverPriorityUseFillLevelSetting 
@@ -2166,7 +2154,6 @@ function courseplay.hud:setCombineAIDriverContent(vehicle)
 	self:addRowButton(vehicle,nil,'sendCourseplayerHome', 0, 3, 1 )
 	if vehicle.cp.isChopper then	
 		self:addRowButton(vehicle,nil,'switchCourseplayerSide', 0, 4, 1 )
-		self:addRowButton(vehicle,vehicle.cp.settings.turnStage,'toggle', 0, 5, 1 )
 	else
 		self:addRowButton(vehicle,vehicle.cp.settings.driverPriorityUseFillLevel,'toggle', 0, 4, 1 )
 		self:addRowButton(vehicle,vehicle.cp.settings.stopForUnload,'toggle', 0, 5, 1 )

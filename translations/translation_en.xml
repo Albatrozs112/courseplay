@@ -122,10 +122,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Combine controls" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Manage courses" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Choose folder" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Manage combines" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="Speed limits" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="General driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Settings" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Combine is turning" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="No work area at this course" />
@@ -171,7 +171,7 @@
 		<text name="COURSEPLAY_ENDING_LOCATION" 							text="Ending location" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 							text="Starting direction" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 						text="Return to first point" />
-		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="deactivated and release CP Driver" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="Stop and dismiss driver" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="activated and release CP Driver" />
 		<text name="COURSEPLAY_CORNER_1" 									text="South-West" />
 		<text name="COURSEPLAY_CORNER_2" 									text="North-West" />
@@ -232,7 +232,7 @@
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Headland reverse maneuver"/>
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Straight" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Curve" />
-		<text name="COURSEPLAY_CENTER_MODE"									text="Field center (experimental)" />
+		<text name="COURSEPLAY_CENTER_MODE"									text="Field center" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Up/Down" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Racetrack" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spiral" />
@@ -245,7 +245,7 @@
 		<text name="COURSEPLAY_DEACTIVATED" 								text="Deactivated" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Ridge markers" />
 		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />
-    	<text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    		text="Keep Current Steering" />
+    	<text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    		text="Keep current steering" />
 		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "				text="Courseplay won't change the current crab steering setting of the vehicle" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="Unloading on field" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="Automatic" />
@@ -286,6 +286,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="Current waypoint" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="Next closest waypoint" />
 		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Field edge path" />
 		<text name="COURSEPLAY_FIELD" 										text="Field" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(Currently loaded course)" />
@@ -398,8 +399,8 @@
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="Leveling" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"							text="Filling up" />
 		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"						text="Compacting" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="Automaticly stop for" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="Just courseplayer/autodrive driver" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="Automatically stop for" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="Courseplaye/Autodrive driver only" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 						text="All player controlled unloaders" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="Detect unloaders in range of " />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="Max speed while pushing" />
@@ -481,7 +482,7 @@
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
 		
-		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="no fillType selected!/no Refillcourse supported!!" />
+		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="no fillType selected!/no refill course supported!!" />
 		<text name="COURSEPLAY_ADD_FILLTYPE"								text="add new fillType" />
 		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="has reached refill point." />
 		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="has wrong fillType for Trigger." />
@@ -494,10 +495,10 @@
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
 		
 		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
-		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
+		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for silo worker" />
 
 		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatic repair" />
-		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repairs automatically on the Field." />
+		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repairs automatically on the field." />
 		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Don't repair" />
 		<text name="COURSEPLAY_AUTOREPAIR_ALWAYS"							text="Keep it healthy" />
 

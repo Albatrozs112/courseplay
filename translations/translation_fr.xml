@@ -285,6 +285,8 @@
     <text name="COURSEPLAY_FIRST_POINT" 						 		text="Premier point" />
     <text name="COURSEPLAY_CURRENT_POINT" 						 		text="Point actuel" />
     <text name="COURSEPLAY_NEXT_POINT" 									text="Prochain point" />
+	<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
+	<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
     <text name="COURSEPLAY_FIELD_EDGE_PATH" 					 		text="Contour de la parcelle" />
     <text name="COURSEPLAY_FIELD" 							 			text="Parcelle" />
     <text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="Course actuelle" />

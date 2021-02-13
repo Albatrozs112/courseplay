@@ -281,6 +281,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 						 		text="ponto atual" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 		text="ponto seguinte" />
 		<text name="COURSEPLAY_UNLOAD" 										text="Descarregar" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 					 		text="Percurso da borda do campo" />
 		<text name="COURSEPLAY_FIELD" 							 			text="Campo" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(Percurso atual carregado)" />
