@@ -608,8 +608,7 @@ function PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, goal,
                                                           allowReverse, fieldNum,
                                                           vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
 
-		local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
-		local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
+		local start = PathfinderUtil.getVehiclePositionAsState3D(vehicle)
 
     local otherVehiclesCollisionData = PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
     local vehicleData = PathfinderUtil.VehicleData(vehicle, true, 0.5)
@@ -744,11 +743,19 @@ function PathfinderUtil.findDubinsPath(vehicle, startOffset, goalReferenceNode, 
     return dubinsPath, solution:getLength(turnRadius)
 end
 
+
 function PathfinderUtil.getNodePositionAndDirection(node, xOffset, zOffset)
     local x, _, z = localToWorld(node, xOffset or 0, 0, zOffset or 0)
     local lx, _, lz = localDirectionToWorld(node, 0, 0, 1)
     local yRot = math.atan2(lx, lz)
     return x, z, yRot
+end
+
+---@param vehicle Vehicle
+---@return State3D position/heading of vehicle
+function PathfinderUtil.getVehiclePositionAsState3D(vehicle)
+	local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
+	return State3D(x, -z, courseGenerator.fromCpAngle(yRot))
 end
 
 ------------------------------------------------------------------------------------------------------------------------

@@ -11,11 +11,16 @@ function courseplay:openCloseHud(vehicle, open)
 	end;
 end;
 
-function courseplay:setCpMode(vehicle, modeNum)
+function courseplay:setCpMode(vehicle, modeNum, dontSetAIDriver)
 	if vehicle.cp.mode ~= modeNum then
 		vehicle.cp.mode = modeNum;
 		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
-		courseplay:setAIDriver(vehicle, modeNum)
+		if not dontSetAIDriver then
+			-- another ugly hack: when this is called from loadVehicleCPSettings,
+			-- setAIDriver fails as not everything is loaded yet, so just for that case,
+			-- don't call it from here.
+			courseplay:setAIDriver(vehicle, modeNum)
+		end
 	end;
 end;
 
