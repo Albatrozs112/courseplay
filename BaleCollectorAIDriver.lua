@@ -27,7 +27,7 @@ without a field course.
 BaleCollectorAIDriver = CpObject(BaleLoaderAIDriver)
 
 BaleCollectorAIDriver.myStates = {
-	SEARCHING_FOR_BALES = {},
+	SEARCHING_FOR_NEXT_BALE = {},
 	WAITING_FOR_PATHFINDER = {},
 	DRIVING_TO_NEXT_BALE = {},
 	APPROACHING_BALE = {},
@@ -47,32 +47,16 @@ end
 function BaleCollectorAIDriver:setUpAndStart(startingPoint)
 	-- we only have an unload course since we are driving on the field autonomously
 	self.unloadRefillCourse = Course(self.vehicle, self.vehicle.Waypoints, false)
+	-- Set the offset to 0, we'll take care of getting the grabber to the right place
+	self.vehicle.cp.settings.toolOffsetX:set(0)
 
 	if startingPoint:is(StartingPointSetting.START_COLLECTING_BALES) then
 		-- to always have a valid course (for the traffic conflict detector mainly)
 		self.fieldworkCourse = self:getStraightForwardCourse(25)
 		self:startCourse(self.fieldworkCourse, 1)
-		-- Set the offset to 0, we'll take care of getting the grabber to the right place
-		self.vehicle.cp.settings.toolOffsetX:set(0)
-		-- For now we just use the closest bale's location to figure out which field to work on
-		local allBales = self:findBales()
-		local closestBale, d = self:findClosestBale(allBales, self.vehicle.rootNode)
-		if closestBale then
-			self:debug('Closest bale is at %.1f m, on field %d, will collect bales from that field',
-				d, closestBale:getFieldId())
-			self.bales = self:findBales(closestBale:getFieldId())
-			self:setBaleCollectingState(self.states.SEARCHING_FOR_BALES)
-			self:startCollectingBales()
-			self:changeToFieldwork()
-		else
-			if self:getFillLevel() > 0.1 then
-				self:changeToUnloadOrRefill()
-				self:startCourseWithPathfinding(self.unloadRefillCourse, 1)
-			else
-				self:info('No bales found, stopping')
-				courseplay:stop(self.vehicle)
-			end
-		end
+		self.bales = self:findBales(self.vehicle.cp.settings.baleCollectionField:get())
+		self:changeToFieldwork()
+		self:collectNextBale()
 	else
 		local closestIx, _, closestIxRightDirection, _ =
 			self.unloadRefillCourse:getNearestWaypoints(AIDriverUtil.getDirectionNode(self.vehicle))
@@ -93,7 +77,8 @@ function BaleCollectorAIDriver:setBaleCollectingState(state)
 end
 
 
-function BaleCollectorAIDriver:startCollectingBales()
+function BaleCollectorAIDriver:collectNextBale()
+	self:setBaleCollectingState(self.states.SEARCHING_FOR_NEXT_BALE)
 	if #self.bales > 0 then
 		self:findPathToNextBale()
 	else
@@ -102,12 +87,12 @@ function BaleCollectorAIDriver:startCollectingBales()
 			self:changeToUnloadOrRefill()
 			self:startCourseWithPathfinding(self.unloadRefillCourse, 1)
 		else
-			courseplay:stop(self.vehicle)
+			self:stop('WORK_END')
 		end
 	end
 end
 
---- Find bales on field, or field is not supplied, everywhere
+--- Find bales on field, or if field is not supplied, everywhere
 ---@return BaleToCollect[] list of bales found
 function BaleCollectorAIDriver:findBales(fieldId)
 	self:debug('Finding bales on field %d...', fieldId or 0)
@@ -116,7 +101,10 @@ function BaleCollectorAIDriver:findBales(fieldId)
 		if object:isa(Bale) then
 			local bale = BaleToCollect(object)
 			-- if the bale has a mountObject it is already on the loader so ignore it
-			if (not fieldId or fieldId == 0 or bale:getFieldId() == fieldId) and not object.mountObject then
+			if (not fieldId or fieldId == 0 or bale:getFieldId() == fieldId) and
+				not object.mountObject and
+				object:getOwnerFarmId() == self.vehicle:getOwnerFarmId()
+			then
 				-- bales may have multiple nodes, using the object.id deduplicates the list
 				balesFound[object.id] = bale
 			end
@@ -127,6 +115,7 @@ function BaleCollectorAIDriver:findBales(fieldId)
 	for _, bale in pairs(balesFound) do
 		table.insert(bales, bale)
 	end
+	self:debug('Found %d bales on field %d', #bales, fieldId)
 	return bales
 end
 
@@ -211,7 +200,7 @@ function BaleCollectorAIDriver:onPathfindingDoneToNextBale(path, goalNodeInvalid
 		self:setBaleCollectingState(self.states.DRIVING_TO_NEXT_BALE)
 		return true
 	else
-		self:setBaleCollectingState(self.states.SEARCHING_FOR_BALES)
+		self:setBaleCollectingState(self.states.SEARCHING_FOR_NEXT_BALE)
 		return false
 	end
 end
@@ -223,11 +212,22 @@ function BaleCollectorAIDriver:onLastWaypoint()
 			self:approachBale()
 		elseif self.baleCollectingState == self.states.PICKING_UP_BALE then
 			self:debug('last waypoint on bale pickup reached, start collecting bales again')
-			self:setBaleCollectingState(self.states.SEARCHING_FOR_BALES)
-			self:startCollectingBales()
+			self:collectNextBale()
 		end
 	else
 		BaleLoaderAIDriver.onLastWaypoint(self)
+	end
+end
+
+function BaleCollectorAIDriver:onEndCourse()
+	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE or
+		self.state == self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE then
+		self:debug('Back from unload course, check for bales again')
+		self.bales = self:findBales(self.vehicle.cp.settings.baleCollectionField:get())
+		self:changeToFieldwork()
+		self:collectNextBale()
+	else
+		BaleLoaderAIDriver.onEndCourse(self)
 	end
 end
 
@@ -237,11 +237,13 @@ function BaleCollectorAIDriver:approachBale()
 	self:setBaleCollectingState(self.states.APPROACHING_BALE)
 end
 
+--- Called from the generic driveFieldwork(), this the part doing the actual work on the field after/before all
+--- implements are started/lowered etc.
 function BaleCollectorAIDriver:work()
-	if self.baleCollectingState == self.states.SEARCHING_FOR_BALES then
+	if self.baleCollectingState == self.states.SEARCHING_FOR_NEXT_BALE then
 		self:setSpeed(0)
-		self:debug('work: searching for bales')
-		self:startCollectingBales()
+		self:debug('work: searching for next bale')
+		self:collectNextBale()
 	elseif self.baleCollectingState == self.states.WAITING_FOR_PATHFINDER then
 		self:setSpeed(0)
 	elseif self.baleCollectingState == self.states.DRIVING_TO_NEXT_BALE then
@@ -257,7 +259,7 @@ function BaleCollectorAIDriver:work()
 		self:setSpeed(0)
 		if not self.baleLoader.spec_baleLoader.grabberMoveState then
 			self:debug('Bale picked up, moving on to the next')
-			self:startCollectingBales()
+			self:collectNextBale()
 		end
 	end
 	self:checkFillLevels()

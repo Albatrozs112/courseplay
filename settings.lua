@@ -2151,10 +2151,9 @@ end
 --- Setting to select a field
 ---@class FieldNumberSetting : SettingList
 FieldNumberSetting = CpObject(SettingList)
-function FieldNumberSetting:init(vehicle)
+function FieldNumberSetting:init(name, label, toolTip, vehicle)
 	local values, texts = self:loadFields()
-	SettingList.init(self, 'fieldNumbers', 'COURSEPLAY_FIELD', 'COURSEPLAY_FIELD',
-		vehicle, values, texts)
+	SettingList.init(self, name, label, toolTip, vehicle, values, texts)
 end
 
 function FieldNumberSetting:loadFields()
@@ -2162,10 +2161,13 @@ function FieldNumberSetting:loadFields()
 	local texts = {}
 	for fieldNumber, _ in pairs( courseplay.fields.fieldData ) do
 		table.insert(values, fieldNumber)
-		table.insert(texts, fieldNumber)
 	end
+	-- numeric sort first
 	table.sort( values, function( a, b ) return a < b end )
-	table.sort( texts, function( a, b ) return a < b end )
+	-- then convert to text
+	for _, fieldNumber in ipairs(values) do
+		table.insert(texts, tostring(fieldNumber))
+	end
 	return values, texts
 end
 
@@ -2181,16 +2183,24 @@ function FieldNumberSetting:refresh()
 	self.current = math.min(self.current, #self.values)
 end
 
+function FieldNumberSetting:changeByX(x)
+	self:refresh()
+	SettingList.changeByX(self, x)
+end
+
+--- Field to collect the bales from
+---@class BaleCollectionFieldSetting : FieldNumberSetting
+BaleCollectionFieldSetting = CpObject(FieldNumberSetting)
+function BaleCollectionFieldSetting:init(vehicle)
+	FieldNumberSetting.init(self, 'baleCollectionField', 'COURSEPLAY_FIELD', 'COURSEPLAY_FIELD', vehicle)
+end
+
 --- Search combine on field
 ---@class SearchCombineOnFieldSetting : FieldNumberSetting
 SearchCombineOnFieldSetting = CpObject(FieldNumberSetting)
 function SearchCombineOnFieldSetting:init(vehicle)
-	FieldNumberSetting.init(self, vehicle)
-	self.name = 'searchCombineOnField'
-	self.label = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
-	self.tooltip = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
-	self.xmlKey = 'searchCombineOnField'
-	self.xmlAttribute = '#fieldNumber'
+	FieldNumberSetting.init(self, 'searchCombineOnField',
+		'COURSEPLAY_SEARCH_COMBINE_ON_FIELD', 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD', vehicle)
 	self:addNoneSelected()
 end
 
@@ -2220,7 +2230,6 @@ end
 SelectedCombineToUnloadSetting = CpObject(SettingList)
 
 function SelectedCombineToUnloadSetting:init()
-	print("SelectedCombineToUnloadSetting:init()")
 	self.name = 'selectedCombineToUnload'
 	self.label = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
 	self.tooltip = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
@@ -2416,14 +2425,6 @@ AutomaticCoverHandlingSetting = CpObject(BooleanSetting)
 function AutomaticCoverHandlingSetting:init(vehicle)
 	BooleanSetting.init(self, 'automaticCoverHandling', 'COURSEPLAY_COVER_HANDLING', 'COURSEPLAY_COVER_HANDLING', vehicle)
 	self:set(true)
-end
-
---no Function!!
----@class AutomaticUnloadingOnFieldSetting : BooleanSetting
-AutomaticUnloadingOnFieldSetting = CpObject(BooleanSetting)
-function AutomaticUnloadingOnFieldSetting:init(vehicle)
-	BooleanSetting.init(self, 'automaticUnloadingOnField', 'COURSEPLAY_UNLOADING_ON_FIELD', 'COURSEPLAY_UNLOADING_ON_FIELD',vehicle, {'COURSEPLAY_MANUAL','COURSEPLAY_AUTOMATIC'})
-	self:set(false)
 end
 
 ---@class DriverPriorityUseFillLevelSetting : BooleanSetting
@@ -4165,7 +4166,7 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(EnableVisualWaypointsTemporary, vehicle)
 	container:addSetting(StopAtEndSetting, vehicle)
 	container:addSetting(AutomaticCoverHandlingSetting, vehicle)
-	container:addSetting(AutomaticUnloadingOnFieldSetting, vehicle)
+	container:addSetting(BaleCollectionFieldSetting, vehicle)
 	container:addSetting(DriverPriorityUseFillLevelSetting, vehicle)
 	container:addSetting(UseRecordingSpeedSetting, vehicle)
 	container:addSetting(WarningLightsModeSetting, vehicle)

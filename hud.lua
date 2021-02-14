@@ -1139,16 +1139,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page,'changeByX',vehicle.cp.settings.separateFillTypeLoading)
 					end
-				elseif entry.functionToCall == 'automaticUnloadingOnField:toggle' then
-					--not used right now!
-					--AutomaticUnloadingOnFieldSetting 
-					if not vehicle.cp.hasUnloadingRefillingCourse then
-						self:enableButtonWithFunction(vehicle,page,'toggle',vehicle.cp.settings.automaticUnloadingOnField)
-						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.automaticUnloadingOnField:getLabel() 
-						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.automaticUnloadingOnField:getText() 
-					else
-						self:disableButtonWithFunction(vehicle,page,'toggle',vehicle.cp.settings.automaticUnloadingOnField)
-					end
+				elseif entry.functionToCall == 'baleCollectionField:changeByX' then
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.baleCollectionField:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.baleCollectionField:getText()
 				elseif entry.functionToCall == 'shovelStopAndGo:toggle' then
 					--ShovelStopAndGoSetting
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.shovelStopAndGo:getLabel()
@@ -2253,7 +2246,7 @@ end
 
 function courseplay.hud:setBaleLoaderAIDriverContent(vehicle)
 	self:debug(vehicle,"setBaleLoaderAIDriverContent")
-	self:addRowButton(vehicle,vehicle.cp.settings.automaticUnloadingOnField,'toggle', 3, 6, 1 )
+	self:addSettingsRow(vehicle, vehicle.cp.settings.baleCollectionField,'changeByX', 3, 6, 1 )
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
