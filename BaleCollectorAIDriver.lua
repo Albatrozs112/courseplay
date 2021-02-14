@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 A bale loader AI driver who can find and collect bales on a field
 without a field course.
 
+For unloading, it has the same behavior as the BaleLoaderAIDriver.
+
 --]]
 
 ---@class BaleCollectorAIDriver : BaleLoaderAIDriver
