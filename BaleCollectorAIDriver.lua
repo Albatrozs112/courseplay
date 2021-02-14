@@ -57,12 +57,22 @@ function BaleCollectorAIDriver:setUpAndStart(startingPoint)
 		-- For now we just use the closest bale's location to figure out which field to work on
 		local allBales = self:findBales()
 		local closestBale, d = self:findClosestBale(allBales, self.vehicle.rootNode)
-		self:debug('Closest bale is at %.1f m, on field %d, will collect bales from that field',
-			d, closestBale:getFieldId())
-		self.bales = self:findBales(closestBale:getFieldId())
-		self:setBaleCollectingState(self.states.SEARCHING_FOR_BALES)
-		self:startCollectingBales()
-		self:changeToFieldwork()
+		if closestBale then
+			self:debug('Closest bale is at %.1f m, on field %d, will collect bales from that field',
+				d, closestBale:getFieldId())
+			self.bales = self:findBales(closestBale:getFieldId())
+			self:setBaleCollectingState(self.states.SEARCHING_FOR_BALES)
+			self:startCollectingBales()
+			self:changeToFieldwork()
+		else
+			if self:getFillLevel() > 0.1 then
+				self:changeToUnloadOrRefill()
+				self:startCourseWithPathfinding(self.unloadRefillCourse, 1)
+			else
+				self:info('No bales found, stopping')
+				courseplay:stop(self.vehicle)
+			end
+		end
 	else
 		local closestIx, _, closestIxRightDirection, _ =
 			self.unloadRefillCourse:getNearestWaypoints(AIDriverUtil.getDirectionNode(self.vehicle))
@@ -90,8 +100,10 @@ function BaleCollectorAIDriver:startCollectingBales()
 		self:info('No bales found.')
 		if self:getFillLevel() > 0.1 then
 			self:changeToUnloadOrRefill()
+			self:startCourseWithPathfinding(self.unloadRefillCourse, 1)
+		else
+			courseplay:stop(self.vehicle)
 		end
-		courseplay:stop(self.vehicle)
 	end
 end
 
@@ -168,9 +180,12 @@ end
 function BaleCollectorAIDriver:startPathfindingToBale(bale)
 	if not self.pathfinder or not self.pathfinder:isActive() then
 		self.pathfindingStartedAt = self.vehicle.timer
-		self:debug('Start pathfinding to next bale (%d)', bale:getId())
+		local safeDistanceFromBale = bale:getSafeDistance()
+		local halfVehicleWidth = self.vehicle.sizeWidth and self.vehicle.sizeWidth / 2 or 1.5
+		self:debug('Start pathfinding to next bale (%d), safe distance from bale %.1f, half vehicle width %.1f',
+			bale:getId(), safeDistanceFromBale, halfVehicleWidth)
 		local goal = self:getBaleTarget(bale)
-		local offset = Vector(0, 3.5)
+		local offset = Vector(0, safeDistanceFromBale + halfVehicleWidth + 0.2)
 		goal:add(offset:rotate(goal.t))
 		local done, path, goalNodeInvalid
 		self.pathfinder, done, path, goalNodeInvalid =
@@ -202,13 +217,17 @@ function BaleCollectorAIDriver:onPathfindingDoneToNextBale(path, goalNodeInvalid
 end
 
 function BaleCollectorAIDriver:onLastWaypoint()
-	if self.baleCollectingState == self.states.DRIVING_TO_NEXT_BALE then
-		self:debug('last waypoint while driving to next bale reached')
-		self:approachBale()
-	elseif self.baleCollectingState == self.states.PICKING_UP_BALE then
-		self:debug('last waypoint on bale pickup reached, start collecting bales again')
-		self:setBaleCollectingState(self.states.SEARCHING_FOR_BALES)
-		self:startCollectingBales()
+	if self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState == self.states.WORKING then
+		if self.baleCollectingState == self.states.DRIVING_TO_NEXT_BALE then
+			self:debug('last waypoint while driving to next bale reached')
+			self:approachBale()
+		elseif self.baleCollectingState == self.states.PICKING_UP_BALE then
+			self:debug('last waypoint on bale pickup reached, start collecting bales again')
+			self:setBaleCollectingState(self.states.SEARCHING_FOR_BALES)
+			self:startCollectingBales()
+		end
+	else
+		BaleLoaderAIDriver.onLastWaypoint(self)
 	end
 end
 

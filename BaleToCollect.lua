@@ -58,3 +58,12 @@ function BaleToCollect:getPositionAsState3D()
 	local _, yRot, _ = getWorldRotation(self.bale.nodeId)
 	return State3D(xb, -zb, courseGenerator.fromCpAngle(yRot))
 end
+
+--- Minimum distance from the bale's center (node) to avoid hitting the bale
+--- when driving by in any direction
+function BaleToCollect:getSafeDistance()
+	-- round bales don't have length, just diameter
+	local length = self.bale.baleDiameter and self.bale.baleDiameter or self.bale.baleLength
+	-- no matter what kind of bale, the footprint is a rectangle, get the diagonal
+	return math.sqrt(length * length + self.bale.baleWidth * self.bale.baleWidth) / 2
+end
