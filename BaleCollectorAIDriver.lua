@@ -215,6 +215,10 @@ function BaleCollectorAIDriver:onLastWaypoint()
 		elseif self.baleCollectingState == self.states.PICKING_UP_BALE then
 			self:debug('last waypoint on bale pickup reached, start collecting bales again')
 			self:collectNextBale()
+		elseif self.baleCollectingState == self.states.APPROACHING_BALE then
+			self:debug('looks like somehow missed a bale, rescanning field')
+			self.bales = self:findBales(self.vehicle.cp.settings.baleCollectionField:get())
+			self:collectNextBale()
 		end
 	else
 		BaleLoaderAIDriver.onLastWaypoint(self)
@@ -235,7 +239,7 @@ end
 
 function BaleCollectorAIDriver:approachBale()
 	self:debug('Approaching bale...')
-	self:startCourse(self:getStraightForwardCourse(25), 1)
+	self:startCourse(self:getStraightForwardCourse(20), 1)
 	self:setBaleCollectingState(self.states.APPROACHING_BALE)
 end
 
