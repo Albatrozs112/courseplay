@@ -670,7 +670,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 				elseif entry.functionToCall == 'returnToFirstPoint:changeByX' then
 					--ReturnToFirstPointSetting 
-					if vehicle.cp.canDrive then
+					if not vehicle.cp.settings.returnToFirstPoint:isDisabled() then
 						self:enableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.returnToFirstPoint)
 						self:disableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.returnToFirstPoint:getLabel()

@@ -2085,6 +2085,10 @@ function ReturnToFirstPointSetting:init(vehicle)
 		})
 end
 
+function ReturnToFirstPointSetting:isDisabled()
+	return not self.vehicle.cp.canDrive or self.vehicle.cp.mode == courseplay.MODE_BALE_COLLECTOR
+end
+
 function ReturnToFirstPointSetting:isReturnToStartActive()
 	return self:get() == self.RETURN_TO_START or self:get() == self.RETURN_TO_START_AND_RELEASE_DRIVER
 end
