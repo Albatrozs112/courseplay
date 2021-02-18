@@ -1383,7 +1383,7 @@ function SettingList:__tostring()
 end
 
 -- Get the current text
-function SettingList:hugetText()
+function SettingList:getText()
 	return courseplay:loc(self.texts[self.current])
 end
 
