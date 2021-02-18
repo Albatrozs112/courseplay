@@ -654,7 +654,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					--autoDriveModeSetting
 					if not vehicle.cp.settings.autoDriveMode:isDisabled() then
 						self:enableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.autoDriveMode)
-					--	self:disableButtonWithFunction(vehicle,page, 'toggle',vehicle.cp.settings.stopAtEnd)
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.autoDriveMode:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.autoDriveMode:getText() 
 					else
@@ -2253,7 +2252,6 @@ function courseplay.hud:setBaleCollectorAIDriverContent(vehicle)
 	self:setupCustomFieldEdgeButtons(vehicle,1,5)
 	self:addRowButton(vehicle,nil,'addCustomSingleFieldEdgeToList', 1, 6, 1 )
 	-- shown in place of the custom field row when a course is loaded
-	self:addRowButton(vehicle,vehicle.cp.settings.foldImplementAtEnd,'toggle', 6, 6, 1 )
 
 	--page 3 settings
 	self:enablePageButton(vehicle, 3)
@@ -2261,10 +2259,7 @@ function courseplay.hud:setBaleCollectorAIDriverContent(vehicle)
 
 	--page 8 fieldwork settings
 	self:enablePageButton(vehicle, 8)
-	self:addRowButton(vehicle,vehicle.cp.settings.symmetricLaneChange,'toggle', 8, 2, 1 )
-	self:addRowButton(vehicle,vehicle.cp.settings.turnOnField,'toggle', 8, 3, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.useRealisticDriving,'toggle', 8, 4, 1 )
-
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
