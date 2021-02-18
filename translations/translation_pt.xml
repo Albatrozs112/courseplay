@@ -68,6 +68,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 					  		text=": equipamento precisa de ser descarregado!" />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 				        	text=": equipamento precisa de ser carregado" />
 		<text name="COURSEPLAY_UNLOADING_BALES" 					 		text="a descarregar fardos" />
+		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 						 		text="trânsito congestionado" />
 		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="trânsito...a reduzir velocidade" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 		text="chegou ao ponto de descarga" />

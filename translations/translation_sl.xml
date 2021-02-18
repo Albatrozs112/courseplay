@@ -72,6 +72,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text=": priključek je potrebno raztovoriti." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": priključek je potrebno napolniti." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="odlaganje bal." />
+		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="ima ovire." />
 		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="prišel na prožilec za odlaganje" />

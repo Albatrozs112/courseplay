@@ -72,6 +72,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text=": necesita ser descargado." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": necesita ser rellenado." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="descargando pacas." />
+		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="Atasco de trafico." />
 		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="reduciendo velocidad por el tráfico" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Punto de descarga alcanzado" />

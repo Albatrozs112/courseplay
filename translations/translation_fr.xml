@@ -72,6 +72,7 @@
     <text name="COURSEPLAY_NEEDS_UNLOADING" 					 		text=": doit être vidé." />
     <text name="COURSEPLAY_NEEDS_REFILLING" 					 		text=": doit être ravitaillé." />
     <text name="COURSEPLAY_UNLOADING_BALES" 					 		text="décharge les ballots." />
+		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
     <text name="COURSEPLAY_IS_IN_TRAFFIC" 						 		text="est bloqué par un véhicule." />
 	<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="ralentit pour laisser passer un véhicule." />
     <text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 		text="le trigger est atteint" />

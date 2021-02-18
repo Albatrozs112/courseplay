@@ -46,6 +46,12 @@ function BaleCollectorAIDriver:init(vehicle)
 	self.turnRadius = AIDriverUtil.getTurningRadius(self.vehicle)
 end
 
+function BaleCollectorAIDriver:setHudContent()
+	-- skip the inheritance from fieldwork/bale loader as this is very special
+	AIDriver.setHudContent(self)
+	courseplay.hud:setBaleCollectorAIDriverContent(self.vehicle)
+end
+
 function BaleCollectorAIDriver:setUpAndStart(startingPoint)
 	-- we only have an unload course since we are driving on the field autonomously
 	self.unloadRefillCourse = Course(self.vehicle, self.vehicle.Waypoints, false)
@@ -56,7 +62,12 @@ function BaleCollectorAIDriver:setUpAndStart(startingPoint)
 		-- to always have a valid course (for the traffic conflict detector mainly)
 		self.fieldworkCourse = self:getStraightForwardCourse(25)
 		self:startCourse(self.fieldworkCourse, 1)
-		self.bales = self:findBales(self.vehicle.cp.settings.baleCollectionField:get())
+		local myField = self.vehicle.cp.settings.baleCollectionField:get()
+		if not myField or myField < 1 then
+			self:stop("NO_FIELD_SELECTED")
+			return
+		end
+		self.bales = self:findBales(myField)
 		self:changeToFieldwork()
 		self:collectNextBale()
 	else
@@ -94,7 +105,7 @@ function BaleCollectorAIDriver:collectNextBale()
 	end
 end
 
---- Find bales on field, or if field is not supplied, everywhere
+--- Find bales on field
 ---@return BaleToCollect[] list of bales found
 function BaleCollectorAIDriver:findBales(fieldId)
 	self:debug('Finding bales on field %d...', fieldId or 0)

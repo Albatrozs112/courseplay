@@ -72,6 +72,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text=": work tool needs to be unloaded." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": work tool needs to be refilled." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="unloading bales." />
+		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="is in traffic." />
 		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="tip trigger reached" />

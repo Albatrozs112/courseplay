@@ -1383,7 +1383,7 @@ function SettingList:__tostring()
 end
 
 -- Get the current text
-function SettingList:getText()
+function SettingList:hugetText()
 	return courseplay:loc(self.texts[self.current])
 end
 
@@ -2181,6 +2181,22 @@ function FieldNumberSetting:refresh()
 		self.valueFromXml = nil
 	end
 	self.current = math.min(self.current, #self.values)
+end
+
+-- see above, refresh in case it was not initialized
+function FieldNumberSetting:get()
+	if #self.values == 0 then
+		self:refresh()
+	end
+	return SettingList.get(self)
+end
+
+-- see above, refresh in case it was not initialized
+function FieldNumberSetting:getText()
+	if #self.values == 0 then
+		self:refresh()
+	end
+	return SettingList.getText(self)
 end
 
 function FieldNumberSetting:changeByX(x)

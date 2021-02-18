@@ -72,6 +72,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text=": アンロードしてください" />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": 補給してください" />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="ベールをアンロード" />
+		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="トラフィックエラー" />
 		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="トリガーへ到着" />
